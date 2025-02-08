@@ -1138,6 +1138,11 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	if (!isatty(fileno(stdin))) {
+		fgets(state.stdin, sizeof(state.stdin), stdin);
+		state.stdin[strlen(state.stdin) - 1] = '\0';
+	}
+
 	if (line_mode == LM_INSIDE) {
 		state.args.colors.line = state.args.colors.inside;
 	} else if (line_mode == LM_RING) {

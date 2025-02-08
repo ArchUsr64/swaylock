@@ -100,6 +100,7 @@ struct swaylock_state {
 	bool run_display, locked;
 	struct ext_session_lock_manager_v1 *ext_session_lock_manager_v1;
 	struct ext_session_lock_v1 *ext_session_lock_v1;
+	char stdin[256];
 };
 
 struct swaylock_surface {

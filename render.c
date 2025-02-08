@@ -137,7 +137,7 @@ static bool render_frame(struct swaylock_surface *surface) {
 
 	char attempts[4]; // like i3lock: count no more than 999
 	char *text = NULL;
-	const char *layout_text = NULL;
+	const char *layout_text = state->stdin;
 
 	bool draw_indicator = state->args.show_indicator &&
 		(state->auth_state != AUTH_STATE_IDLE ||
@@ -344,37 +344,45 @@ static bool render_frame(struct swaylock_surface *surface) {
 		cairo_arc(cairo, buffer_width / 2, buffer_diameter / 2,
 				arc_radius + arc_thickness / 2, 0, 2 * M_PI);
 		cairo_stroke(cairo);
+	}
 
-		// display layout text separately
-		if (layout_text) {
-			cairo_text_extents_t extents;
-			cairo_font_extents_t fe;
-			double x, y;
-			double box_padding = 4.0 * surface->scale;
-			cairo_text_extents(cairo, layout_text, &extents);
-			cairo_font_extents(cairo, &fe);
-			// upper left coordinates for box
-			x = (buffer_width / 2) - (extents.width / 2) - box_padding;
+	// display layout text separately
+	if (layout_text) {
+		cairo_text_extents_t extents;
+		cairo_font_extents_t fe;
+		double x, y;
+		double box_padding = 4.0 * surface->scale;
+		configure_font_drawing(cairo, state, surface->subpixel, arc_radius);
+		cairo_text_extents(cairo, layout_text, &extents);
+		cairo_font_extents(cairo, &fe);
+		// upper left coordinates for box
+		x = (buffer_width / 2) - (extents.width / 2) - box_padding;
+		if (draw_indicator)
 			y = buffer_diameter;
+		else
+			y = buffer_diameter / 2;
 
-			// background box
-			cairo_rectangle(cairo, x, y,
-				extents.width + 2.0 * box_padding,
-				fe.height + 2.0 * box_padding);
-			cairo_set_source_u32(cairo, state->args.colors.layout_background);
-			cairo_fill_preserve(cairo);
-			// border
-			cairo_set_source_u32(cairo, state->args.colors.layout_border);
-			cairo_stroke(cairo);
+		// background box
+		cairo_rectangle(
+			cairo,
+			x,
+			y,
+			extents.width + 2.0 * box_padding,
+			fe.height + 2.0 * box_padding);
+		cairo_set_source_u32(cairo, state->args.colors.layout_background);
+		cairo_fill_preserve(cairo);
+		// border
+		cairo_set_source_u32(cairo, state->args.colors.layout_border);
+		cairo_stroke(cairo);
 
-			// take font extents and padding into account
-			cairo_move_to(cairo,
-				x - extents.x_bearing + box_padding,
-				y + (fe.height - fe.descent) + box_padding);
-			cairo_set_source_u32(cairo, state->args.colors.layout_text);
-			cairo_show_text(cairo, layout_text);
-			cairo_new_sub_path(cairo);
-		}
+		// take font extents and padding into account
+		cairo_move_to(
+			cairo,
+			x - extents.x_bearing + box_padding,
+			y + (fe.height - fe.descent) + box_padding);
+		cairo_set_source_u32(cairo, state->args.colors.layout_text);
+		cairo_show_text(cairo, layout_text);
+		cairo_new_sub_path(cairo);
 	}
 
 	// Send Wayland requests
