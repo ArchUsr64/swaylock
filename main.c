@@ -34,9 +34,9 @@ static uint32_t parse_color(const char *color) {
 
 	int len = strlen(color);
 	if (len != 6 && len != 8) {
-		swaylock_log(LOG_DEBUG, "Invalid color %s, defaulting to 0xFFFFFFFF",
+		swaylock_log(LOG_DEBUG, "Invalid color %s, defaulting to 0x000000FF",
 				color);
-		return 0xFFFFFFFF;
+		return 0x000000FF;
 	}
 	uint32_t res = (uint32_t)strtoul(color, NULL, 16);
 	if (strlen(color) == 6) {
@@ -398,7 +398,7 @@ static void load_image(char *arg, struct swaylock_state *state) {
 }
 
 static void set_default_colors(struct swaylock_colors *colors) {
-	colors->background = 0xFFFFFFFF;
+	colors->background = 0x000000FF;
 	colors->bs_highlight = 0xDB3300FF;
 	colors->key_highlight = 0x33DB00FF;
 	colors->caps_lock_bs_highlight = 0xDB3300FF;
@@ -547,7 +547,7 @@ static int parse_options(int argc, char **argv, struct swaylock_state *state,
 		"  -C, --config <config_file>       "
 			"Path to the config file.\n"
 		"  -c, --color <color>              "
-			"Turn the screen into the given color instead of white.\n"
+			"Turn the screen into the given color instead of black.\n"
 		"  -d, --debug                      "
 			"Enable debugging output.\n"
 		"  -e, --ignore-empty-password      "
